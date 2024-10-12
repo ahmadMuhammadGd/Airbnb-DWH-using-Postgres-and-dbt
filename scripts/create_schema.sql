@@ -1,0 +1,2 @@
+CREATE SCHEMA dwh;
+CREATE EXTENSION postgis;

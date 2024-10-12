@@ -1,0 +1,22 @@
+version: 2
+
+sources:
+  - name: airbnb
+    database: bnb  
+    schema: public  
+    tables:
+      - name: calendar
+        description: >
+          The calendar file records the price, availability and other details from the listing\'s calendar for each day of the next 365 days
+      
+      - name: listings
+        description: >
+          Detailed Listings data
+
+      - name: neighbourhoods
+        description: >
+          Neighbourhood list for geo filter. Sourced from city or open source GIS files.
+      
+      - name: reviews
+        description: >
+          Detailed Review Data

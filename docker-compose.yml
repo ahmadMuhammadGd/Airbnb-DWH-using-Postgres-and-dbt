@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+  db:
+    image: postgis/postgis:17-3.4
+    container_name: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./secrets.env
+    volumes:
+      - local_pgdata:/var/lib/postgresql/data
+      - ./db-init:/db-init
+      - ./scripts:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s 
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "8888:80"
+    env_file:
+      - ./secrets.env
+    volumes:
+      - ./db-init:/db-init
+      - pgadmin-data:/var/lib/pgadmin
+
+volumes:
+  local_pgdata:
+  pgadmin-data:

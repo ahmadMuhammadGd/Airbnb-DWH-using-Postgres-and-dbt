@@ -62,5 +62,3 @@ for path in geojson_files_list:
     except Exception as e:
             print(f"Error while seeding {path} into {table_name}: {e}")
         
-    
-print("Data seeding completed successfully!")

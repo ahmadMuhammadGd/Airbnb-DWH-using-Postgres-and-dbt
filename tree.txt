@@ -1,0 +1,58 @@
+.
+├── db-init
+├── dbt_model
+│   ├── analyses
+│   ├── dbt_project.yml
+│   ├── macros
+│   ├── models
+│   │   ├── intermediate
+│   │   │   ├── int_calendar.sql
+│   │   │   ├── int_neightbourhoods.sql
+│   │   │   ├── int_reviews.sql
+│   │   │   └── schema.yaml
+│   │   ├── mart
+│   │   │   ├── dims
+│   │   │   │   ├── dim_date.sql
+│   │   │   │   ├── dim_host.sql
+│   │   │   │   ├── dim_listing.sql
+│   │   │   │   ├── dim_neighbourhood.sql
+│   │   │   │   ├── dim_reviewer.sql
+│   │   │   │   └── schema.yaml
+│   │   │   └── facts
+│   │   │       ├── fact_listing.sql
+│   │   │       ├── fact_reviews.sql
+│   │   │       └── schema.yaml
+│   │   ├── sources.yml
+│   │   └── staging
+│   │       ├── schema.yaml
+│   │       ├── stg_calendar.sql
+│   │       ├── stg_listing.sql
+│   │       ├── stg_neighbourhoods.sql
+│   │       └── stg_reviews.sql
+│   ├── package-lock.yml
+│   ├── packages.yml
+│   ├── README.md
+│   ├── seeds
+│   ├── snapshots
+│   └── tests
+├── docker-compose.yml
+├── load_source_data.py
+├── notebook.ipynb
+├── raw
+│   ├── calendar.csv
+│   ├── listings.csv
+│   ├── neighbourhoods.csv
+│   ├── neighbourhoods.geojson
+│   └── reviews.csv
+├── readme_assets
+│   └── lineage.png
+├── README.md
+├── requirements.txt
+├── scripts
+│   └── create_schema.sql
+├── secrets.env
+├── shutdown.sh
+├── start.sh
+└── tree.txt
+
+16 directories, 39 files

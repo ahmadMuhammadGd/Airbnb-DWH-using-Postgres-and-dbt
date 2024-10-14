@@ -1,3 +1,11 @@
+{{ config(
+    indexes=[
+      {'columns': ['reviewer_id'], 'unique': False},
+    ],
+    unique_key='reviewer_id',
+    incremental_strategy='merge',
+)}}
+
 WITH CTE_reviewer AS(
     SELECT DISTINCT
           reviewer_id
@@ -29,3 +37,4 @@ FROM
 WHERE
     LENGTH(reviewer_first_name) > 1 
     AND LENGTH(reviewer_last_name) > 1
+

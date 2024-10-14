@@ -1,3 +1,11 @@
+{{ config(
+    indexes=[
+      {'columns': ['neighbourhood_id'], 'unique': True},
+    ],
+    unique_key='neighbourhood_id',
+    incremental_strategy='merge',
+)}}
+
 WITH CTE_neighbourhoods AS (
 	SELECT
         neighbourhood_id
@@ -10,3 +18,5 @@ WITH CTE_neighbourhoods AS (
 SELECT
     * 
 FROM CTE_neighbourhoods
+
+

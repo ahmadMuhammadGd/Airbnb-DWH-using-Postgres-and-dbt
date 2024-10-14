@@ -40,7 +40,7 @@ WITH CTE_listing AS (
         property_type::TEXT AS property_type, 
         room_type::TEXT AS room_type, 
         accommodates::INTEGER AS accommodates, 
-        bathrooms::FLOAT AS bathrooms, 
+        bathrooms::INTEGER AS bathrooms, 
         bathrooms_text::TEXT AS bathrooms_text, 
         bedrooms::INTEGER AS bedrooms, 
         beds::INTEGER AS beds, 

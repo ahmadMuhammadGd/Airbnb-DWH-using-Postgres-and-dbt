@@ -2,7 +2,9 @@
     indexes=[
       {'columns': ['date'], 'unique': False},
       {'columns': ['listing_id'], 'unique': False}
-    ]
+    ],
+    unique_key='listing_id',
+    incremental_strategy='append',
 )}}
 
 

@@ -1,7 +1,9 @@
 {{ config(
     indexes=[
       {'columns': ['host_id'], 'unique': True},
-    ]
+    ],
+    unique_key='id',
+    incremental_strategy='merge',
 )}}
 
 WITH CTE_host AS (

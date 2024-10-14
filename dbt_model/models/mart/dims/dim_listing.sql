@@ -2,7 +2,9 @@
     indexes=[
       {'columns': ['listing_id'], 'unique': True},
       {'columns': ['neighbourhood_id'], 'unique': False},
-    ]
+    ],
+    unique_key='listing_id',
+    incremental_strategy='merge',
 )}}
 
 WITH CTE_stg_listing AS (
@@ -24,7 +26,7 @@ WITH CTE_stg_listing AS (
         , bathrooms_text
         , bedrooms
         , beds
-        , amenities
+        , amenities::jsonb
         , neighbourhood_cleansed
     FROM 
         {{ ref('stg_listing') }}
@@ -49,7 +51,7 @@ CTE_WITH_neighbourhood_id AS (
         , bathrooms_text
         , bedrooms
         , beds
-        , amenities
+        , amenities::jsonb
     FROM 
         CTE_stg_listing sl,
         {{ ref('dim_neighbourhood') }} dm
@@ -61,3 +63,4 @@ SELECT
     *
 FROM 
     CTE_WITH_neighbourhood_id
+

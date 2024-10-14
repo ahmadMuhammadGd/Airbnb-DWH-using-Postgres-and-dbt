@@ -1,0 +1,261 @@
+version: 2
+
+models:
+  - name: stg_calendar
+    description: "Airbnb calendar data with availability, pricing, and booking details."
+    columns:
+      - name: listing_id
+        description: "Unique identifier for each Airbnb listing."
+        tests:
+          - not_null
+          - unique
+      - name: date
+        description: "Date for which availability and pricing information is given."
+        tests:
+          - not_null
+      - name: available
+        description: "Indicates whether the listing is available (true) or booked (false)."
+        tests:
+          - not_null
+      - name: price
+        description: "Price per night in the listing's local currency."
+        tests:
+          - not_null
+      - name: adjusted_price
+        description: "Adjusted price after applying discounts or promotions."
+        tests:
+          - not_null
+      - name: minimum_nights
+        description: "Minimum number of nights required to book the listing."
+        tests:
+          - not_null
+      - name: maximum_nights
+        description: "Maximum number of nights allowed to book the listing."
+        tests:
+          - not_null
+
+  # Neighbourhoods table
+  - name: stg_neighbourhoods
+    description: "Geospatial information about the neighbourhoods in the Airbnb dataset."
+    columns:
+      - name: neighbourhood_group
+        description: "A broader group or zone that encompasses several neighbourhoods."
+        tests:
+          - not_null
+      - name: neighbourhood
+        description: "The specific name of the neighbourhood."
+        tests:
+          - not_null
+      - name: geometry
+        description: "Geospatial geometry data (e.g., polygons) that define the neighbourhood boundaries."
+        tests:
+          - not_null
+
+  # Reviews table
+  - name: stg_reviews
+    description: "Customer reviews of Airbnb listings, including reviewer information and comments."
+    columns:
+      - name: listing_id
+        description: "Unique identifier for the Airbnb listing that the review is associated with."
+        tests:
+          - not_null
+      - name: id
+        description: "Unique identifier for each review."
+        tests:
+          - not_null
+          - unique
+      - name: date
+        description: "The date when the review was written."
+        tests:
+          - not_null
+      - name: reviewer_id
+        description: "Unique identifier for the reviewer."
+        tests:
+          - not_null
+      - name: reviewer_name
+        description: "The name of the person who left the review."
+        tests:
+          - not_null
+      - name: comments
+        description: "The text content of the review."
+
+  - name: stg_listing
+    description: "Airbnb listings data, including information about the property, host, location, and availability."
+    columns:
+      - name: listing_id
+        description: "Unique identifier for each Airbnb listing."
+        tests:
+          - not_null
+          - unique
+      - name: listing_url
+        description: "URL of the Airbnb listing."
+        tests:
+          - not_null
+      - name: scrape_id
+        description: "Unique identifier for the scrape that collected the data."
+      - name: last_scraped
+        description: "Date when the listing was last scraped."
+        tests:
+          - not_null
+      - name: source
+        description: "Source of the listing data."
+      - name: name
+        description: "Name of the Airbnb listing."
+      - name: description
+        description: "Description of the Airbnb listing."
+      - name: neighborhood_overview
+        description: "Overview of the neighborhood where the listing is located."
+      - name: picture_url
+        description: "URL of the main picture for the Airbnb listing."
+      - name: host_id
+        description: "Unique identifier for the host of the listing."
+      - name: host_url
+        description: "URL of the host's Airbnb profile."
+      - name: host_name
+        description: "Name of the host."
+      - name: host_since
+        description: "Date when the host joined Airbnb."
+      - name: host_location
+        description: "Location of the host."
+      - name: host_about
+        description: "Information about the host."
+      - name: host_response_time
+        description: "Typical response time of the host."
+      - name: host_response_rate
+        description: "Percentage of messages that the host responds to."
+      - name: host_acceptance_rate
+        description: "Percentage of booking requests that the host accepts."
+      - name: host_is_superhost
+        description: "Indicates if the host is a Superhost."
+        tests:
+          - not_null
+      - name: host_thumbnail_url
+        description: "URL of the host's thumbnail image."
+      - name: host_picture_url
+        description: "URL of the host's profile picture."
+      - name: host_neighbourhood
+        description: "The neighbourhood where the host is based."
+      - name: host_listings_count
+        description: "Number of listings the host has on Airbnb."
+      - name: host_total_listings_count
+        description: "Total number of listings the host has ever had."
+      - name: host_verifications
+        description: "List of verifications the host has completed."
+      - name: host_has_profile_pic
+        description: "Indicates if the host has a profile picture."
+        tests:
+          - not_null
+      - name: host_identity_verified
+        description: "Indicates if the host's identity has been verified."
+        tests:
+          - not_null
+      - name: neighbourhood
+        description: "Name of the neighbourhood where the listing is located."
+      - name: neighbourhood_cleansed
+        description: "The neighbourhood after cleaning and standardization."
+      - name: neighbourhood_group_cleansed
+        description: "Higher-level grouping of neighbourhoods."
+      - name: latitude
+        description: "Latitude of the listing location."
+      - name: longitude
+        description: "Longitude of the listing location."
+      - name: property_type
+        description: "Type of property for the listing (e.g., house, apartment)."
+      - name: room_type
+        description: "Type of room offered (e.g., entire home, private room)."
+      - name: accommodates
+        description: "Number of guests the listing can accommodate."
+        tests:
+          - not_null
+      - name: bathrooms
+        description: "Number of bathrooms in the listing."
+      - name: bathrooms_text
+        description: "Text description of the bathroom(s)."
+      - name: bedrooms
+        description: "Number of bedrooms in the listing."
+        tests:
+          - not_null
+      - name: beds
+        description: "Number of beds in the listing."
+      - name: amenities
+        description: "JSON array of the amenities available at the listing."
+      - name: price
+        description: "Price per night for the listing."
+        tests:
+          - not_null
+      - name: minimum_nights
+        description: "Minimum number of nights required to book the listing."
+        tests:
+          - not_null
+      - name: maximum_nights
+        description: "Maximum number of nights allowed to book the listing."
+        tests:
+          - not_null
+      - name: minimum_minimum_nights
+        description: "The smallest minimum nights booking restriction across all bookings."
+      - name: maximum_minimum_nights
+        description: "The largest minimum nights booking restriction across all bookings."
+      - name: minimum_maximum_nights
+        description: "The smallest maximum nights booking restriction across all bookings."
+      - name: maximum_maximum_nights
+        description: "The largest maximum nights booking restriction across all bookings."
+      - name: minimum_nights_avg_ntm
+        description: "Average minimum nights booking restriction for the next three months."
+      - name: maximum_nights_avg_ntm
+        description: "Average maximum nights booking restriction for the next three months."
+      - name: calendar_updated
+        description: "Text describing when the calendar was last updated."
+      - name: has_availability
+        description: "Indicates if the listing has availability."
+        tests:
+          - not_null
+      - name: availability_30
+        description: "Number of days available in the next 30 days."
+      - name: availability_60
+        description: "Number of days available in the next 60 days."
+      - name: availability_90
+        description: "Number of days available in the next 90 days."
+      - name: availability_365
+        description: "Number of days available in the next 365 days."
+      - name: calendar_last_scraped
+        description: "Date when the availability calendar was last scraped."
+      - name: number_of_reviews
+        description: "Total number of reviews for the listing."
+      - name: number_of_reviews_ltm
+        description: "Number of reviews in the last 12 months."
+      - name: number_of_reviews_l30d
+        description: "Number of reviews in the last 30 days."
+      - name: first_review
+        description: "Date when the first review was written."
+      - name: last_review
+        description: "Date when the most recent review was written."
+      - name: review_scores_rating
+        description: "Overall rating for the listing."
+      - name: review_scores_accuracy
+        description: "Rating for the accuracy of the listing description."
+      - name: review_scores_cleanliness
+        description: "Rating for the cleanliness of the listing."
+      - name: review_scores_checkin
+        description: "Rating for the check-in process."
+      - name: review_scores_communication
+        description: "Rating for communication with the host."
+      - name: review_scores_location
+        description: "Rating for the location of the listing."
+      - name: review_scores_value
+        description: "Rating for the value of the listing."
+      - name: license
+        description: "License or registration number for the listing."
+      - name: instant_bookable
+        description: "Indicates if the listing can be instantly booked."
+        tests:
+          - not_null
+      - name: calculated_host_listings_count
+        description: "Total number of active listings the host has."
+      - name: calculated_host_listings_count_entire_homes
+        description: "Number of active listings where the host offers entire homes."
+      - name: calculated_host_listings_count_private_rooms
+        description: "Number of active listings where the host offers private rooms."
+      - name: calculated_host_listings_count_shared_rooms
+        description: "Number of active listings where the host offers shared rooms."
+      - name: reviews_per_month
+        description: "Average number of reviews per month."

@@ -4,7 +4,9 @@
       {'columns': ['date'], 'unique': False},
       {'columns': ['host_id'], 'unique': False},
       {'columns': ['listing_id'], 'unique': False}
-    ]
+    ],
+    unique_key='pk',
+    incremental_strategy='append',
 )}}
 
 

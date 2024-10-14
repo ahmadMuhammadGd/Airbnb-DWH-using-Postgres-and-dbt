@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: fact_listing
+    description: "Fact table for listing data combining calendar and host information."
+    columns:
+      - name: pk
+        description: "Primary key for the fact_listing table."
+        type: bigint
+      - name: listing_id
+        description: "Unique identifier for the listing."
+        type: bigint
+      - name: host_id
+        description: "Unique identifier for the host of the listing."
+        type: bigint
+      - name: date
+        description: "Date for which the availability and pricing are relevant."
+        type: date
+      - name: available
+        description: "Availability status of the listing on the given date."
+        type: boolean
+      - name: price
+        description: "Price of the listing for the given date."
+        type: numeric
+      - name: adjusted_price
+        description: "Adjusted price of the listing for the given date."
+        type: numeric
+      - name: minimum_nights
+        description: "Minimum nights required for booking the listing."
+        type: integer
+      - name: maximum_nights
+        description: "Maximum nights allowed for booking the listing."
+        type: integer
+
+  - name: fact_reviews
+    description: "Fact table for reviews associated with listings."
+    columns:
+      - name: id
+        description: "Unique identifier for the review."
+        type: integer
+      - name: listing_id
+        description: "Unique identifier for the listing associated with the review."
+        type: bigint
+      - name: host_id
+        type: bigint
+      - name: date
+        description: "Date when the review was written."
+        type: date
+      - name: reviewer_id
+        description: "Unique identifier for the reviewer."
+        type: bigint
+      - name: comments
+        description: "Content of the review."
+        type: text

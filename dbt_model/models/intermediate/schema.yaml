@@ -1,0 +1,76 @@
+version: 2
+
+models:
+  - name: int_calendar
+    description: "This model cleans and processes the calendar data, ensuring that only valid listings with available data are included."
+    columns:
+      - name: listing_id
+        description: "Unique identifier for the listing."
+        type: bigint
+      - name: date
+        description: "The specific date for the listing availability."
+        type: date
+      - name: available
+        description: "Availability status of the listing (true/false)."
+        type: boolean
+      - name: price
+        description: "The price of the listing for the given date."
+        type: numeric
+      - name: adjusted_price
+        description: "Adjusted price after applying any discounts or adjustments."
+        type: numeric
+      - name: minimum_nights
+        description: "Minimum number of nights required for booking."
+        type: integer
+      - name: maximum_nights
+        description: "Maximum number of nights allowed for booking."
+        type: integer
+
+
+  - name: int_neightbourhoods
+    description: "This model processes neighbourhood data, generating a unique ID for each neighbourhood and organizing geographic information."
+    columns:
+      - name: neighbourhood_id
+        description: "Unique identifier for the neighbourhood, generated using ROW_NUMBER()."
+        type: integer
+      - name: neighbourhood_group
+        description: "Name of the neighbourhood group (e.g., district or region)."
+        type: text
+      - name: neighbourhood
+        description: "Name of the specific neighbourhood."
+        type: text
+      - name: geometry
+        description: "Geographic boundary or coordinates of the neighbourhood."
+        type: geometry
+
+  - name: int_reviews
+    description: "This model cleans and processes review data, ensuring valid entries and standardizing reviewer names."
+    columns:
+      - name: listing_id
+        description: "Unique identifier for the listing associated with the review."
+        type: bigint
+      - name: id
+        description: "Unique identifier for the review."
+        type: bigint
+      - name: date
+        description: "The date when the review was made."
+        type: date
+      - name: reviewer_id
+        description: "Unique identifier for the reviewer."
+        type: bigint
+      - name: reviewer_name
+        description: "Name of the reviewer, cleaned and standardized to title case."
+        type: text
+      - name: comments
+        description: "Text of the reviewer's comments about the listing."
+        type: text
+      - name: host_id
+        type: bigint
+
+sources:
+  - name: stg_calendar
+    description: "Source data for the calendar information."
+  - name: stg_neighbourhoods
+    description: "Source data for neighbourhood details."
+  - name: stg_reviews
+    description: "Source data for reviews, containing raw review details."

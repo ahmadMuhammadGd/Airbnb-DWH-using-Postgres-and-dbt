@@ -4,7 +4,9 @@
       {'columns': ['id'], 'unique': True},
       {'columns': ['listing_id'], 'unique': False},
       {'columns': ['reviewer_id'], 'unique': False}
-    ]
+    ],
+    unique_key='id',
+    incremental_strategy='merge',
 )}}
 
 WITH CTE_reviews AS(
@@ -19,13 +21,34 @@ WITH CTE_reviews AS(
         {{ ref('stg_reviews') }}
 )
 ,
+CTE_listing_host AS (
+    SELECT
+      listing_id
+    , host_id
+    FROM 
+        {{ ref('stg_listing') }}
+    WHERE
+        listing_id IS NOT NULL
+        AND
+        host_id IS NOT NULL 
+)
+,
 CTE_pre_cleaned_reviews AS (
     SELECT
         DISTINCT 
-            {{ dbt_utils.star(from=ref('stg_reviews'), except=["reviewer_name"]) }},
-            INITCAP(LOWER(reviewer_name)) AS reviewer_name
+             id
+            , r.listing_id
+            , lh.host_id
+            , date
+            , reviewer_id
+            , comments
+            , INITCAP(LOWER(reviewer_name)) AS reviewer_name
     FROM
-        CTE_reviews
+        CTE_reviews r
+    LEFT JOIN
+        CTE_listing_host lh         
+    ON
+        lh.listing_id = r.listing_id
 )
 ,
 CTE_cleaned_reviews AS (

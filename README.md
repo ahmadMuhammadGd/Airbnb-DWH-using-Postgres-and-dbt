@@ -65,8 +65,8 @@ The schema is designed using an Entity-Relationship Diagram (ERD) that visually 
 ```mermaid
 erDiagram
     %% FACT TABLES IN THE MIDDLE
-    fact_listing {
-        bigint _pk PK
+    fact_listing_calendar {
+        bigint transaction_id PK
         bigint listing_id FK
         bigint host_id FK
         int date FK
@@ -78,7 +78,7 @@ erDiagram
     }
 
     fact_reviews {
-        bigint id PK
+        bigint review_id PK
         bigint listing_id FK
         bigint host_id FK
         int reviewer_id FK
@@ -164,29 +164,27 @@ erDiagram
         int bedrooms
         int beds
         jsonb amenities
-        int neighbourhood_id FK
-        
+        bigint neighbourhood_id FK
     }
 
     dim_neighbourhood {
-        int neighbourhood_id PK
+        bigint neighbourhood_id PK
         string neighbourhood_group
         string neighbourhood
         geometry geometry
+        text row_id
     }
 
     dim_reviewer {
-        int reviewer_id PK
-        string reviewer_name
+        bigint reviewer_id PK
         string reviewer_first_name
         string reviewer_last_name
-        
     }
 
     %% RELATIONSHIPS
-    fact_listing ||--o{ dim_listing: ""
-    fact_listing ||--o{ dim_host: ""
-    fact_listing ||--o{ dim_date: ""
+    fact_listing_calendar ||--o{ dim_listing: ""
+    fact_listing_calendar ||--o{ dim_host: ""
+    fact_listing_calendar ||--o{ dim_date: ""
     
     fact_reviews ||--o{ dim_listing: ""
     fact_reviews ||--o{ dim_reviewer: ""
@@ -195,8 +193,57 @@ erDiagram
 
     dim_listing ||--o{ dim_neighbourhood: ""
 ```
+# Indexes
+```sql
+-- get all indexes
+SELECT 
+	indexname, tablename, indexdef 
+FROM
+	pg_indexes
+WHERE
+	tablename NOT LIKE '%pg_%';
+```
+|indexname                       | tablename           | indexdef                                                                                                       |
+|--------------------------------|---------------------|----------------------------------------------------------------------------------------------------------------|
+|b47ca2c71bbf79c149e50f82360c1a30|fact_listing_calendar|CREATE INDEX b47ca2c71bbf79c149e50f82360c1a30 ON dwh.fact_listing_calendar USING btree (host_id)                |
+|ab034c2146c34375f98796a5b4ea229f|fact_listing_calendar|CREATE INDEX ab034c2146c34375f98796a5b4ea229f ON dwh.fact_listing_calendar USING btree (listing_id)             |
+|65a70554ccc824840054de78d7581d9c|fact_reviews         |CREATE UNIQUE INDEX "65a70554ccc824840054de78d7581d9c" ON dwh.fact_reviews USING btree (review_id)              |
+|ee56c6477276f5407de4485a57754ffe|fact_reviews         |CREATE INDEX ee56c6477276f5407de4485a57754ffe ON dwh.fact_reviews USING btree (listing_id)                      |
+|35572801a31f3775a8dcf64deec3b34d|fact_reviews         |CREATE INDEX "35572801a31f3775a8dcf64deec3b34d" ON dwh.fact_reviews USING btree (date)                          |
+|2b7379686737470c8027de03a3350dd3|fact_listing_calendar|CREATE UNIQUE INDEX "2b7379686737470c8027de03a3350dd3" ON dwh.fact_listing_calendar USING btree (transaction_id)|
+|2c2acd339d6cc5c6ae573182f6168998|fact_listing_calendar|CREATE INDEX "2c2acd339d6cc5c6ae573182f6168998" ON dwh.fact_listing_calendar USING btree (date)                 |
+|spatial_ref_sys_pkey            |spatial_ref_sys      |CREATE UNIQUE INDEX spatial_ref_sys_pkey ON public.spatial_ref_sys USING btree (srid)                           |
+|calendar_pkey                   |calendar             |CREATE UNIQUE INDEX calendar_pkey ON public.calendar USING btree (calendar_id)                                  |
+|listings_pkey                   |listings             |CREATE UNIQUE INDEX listings_pkey ON public.listings USING btree (listing_id)                                   |
+|reviews_pkey                    |reviews              |CREATE UNIQUE INDEX reviews_pkey ON public.reviews USING btree (id)                                             |
+|idx_neighbourhoods_geometry     |neighbourhoods       |CREATE INDEX idx_neighbourhoods_geometry ON public.neighbourhoods USING gist (geometry)                         |
+|neighbourhoods_pkey             |neighbourhoods       |CREATE UNIQUE INDEX neighbourhoods_pkey ON public.neighbourhoods USING btree (neighbourhood_id)                 |
+|listing_id_index                |calendar             |CREATE INDEX listing_id_index ON public.calendar USING btree (listing_id)                                       |
+|e497a45d165deadc305a0d54606e39a3|stg_calendar         |CREATE INDEX e497a45d165deadc305a0d54606e39a3 ON dwh.stg_calendar USING btree (listing_id)                      |
+|5c5ce213de8a4c42f9ed0b2801a082f0|stg_calendar         |CREATE INDEX "5c5ce213de8a4c42f9ed0b2801a082f0" ON dwh.stg_calendar USING btree (date)                          |
+|idx_calendar_calendar_id        |calendar             |CREATE INDEX idx_calendar_calendar_id ON public.calendar USING btree (calendar_id)                              |
+|idx_stg_calendar_calendar_id    |stg_calendar         |CREATE INDEX idx_stg_calendar_calendar_id ON dwh.stg_calendar USING btree (calendar_id)                         |
+|48b77c4eaf39d6d88bd5d4fe7bd0e9c4|stg_listing          |CREATE UNIQUE INDEX "48b77c4eaf39d6d88bd5d4fe7bd0e9c4" ON dwh.stg_listing USING btree (listing_id)              |
+|4d0b61d54db7236abbe979709950dca9|stg_listing          |CREATE INDEX "4d0b61d54db7236abbe979709950dca9" ON dwh.stg_listing USING btree (host_id)                        |
+|a0ee75e8087c43f9eff6ba0a3aee2ffc|stg_reviews          |CREATE INDEX a0ee75e8087c43f9eff6ba0a3aee2ffc ON dwh.stg_reviews USING btree (listing_id)                       |
+|bce41e3324b594ab192e1df37ba4ecf3|stg_reviews          |CREATE INDEX bce41e3324b594ab192e1df37ba4ecf3 ON dwh.stg_reviews USING btree (date)                             |
+|12d0a411e31713e14e70940c15def0d3|stg_reviews          |CREATE UNIQUE INDEX "12d0a411e31713e14e70940c15def0d3" ON dwh.stg_reviews USING btree (id)                      |
+|c1bbcdf35276f157f17ca15ff48394f8|lookup_neighbourhoods|CREATE UNIQUE INDEX c1bbcdf35276f157f17ca15ff48394f8 ON dwh.lookup_neighbourhoods USING btree (row_id)          |
+|94766b7d6bfde9daf3060f2a44d6f024|int_calendar         |CREATE INDEX "94766b7d6bfde9daf3060f2a44d6f024" ON dwh.int_calendar USING btree (date)                          |
+|d5db3a0ca042b2c3c24c558880464adc|int_calendar         |CREATE INDEX d5db3a0ca042b2c3c24c558880464adc ON dwh.int_calendar USING btree (listing_id)                      |
+|0775817a40e5bbda516c4ebbcd5d3a21|int_calendar         |CREATE UNIQUE INDEX "0775817a40e5bbda516c4ebbcd5d3a21" ON dwh.int_calendar USING btree (calendar_id)            |
+|16821200b1fb98615fbd8acf6e8b63c9|int_reviews          |CREATE UNIQUE INDEX "16821200b1fb98615fbd8acf6e8b63c9" ON dwh.int_reviews USING btree (id)                      |
+|733f0dfe6563099fd3e3676975dbcaf5|int_reviews          |CREATE INDEX "733f0dfe6563099fd3e3676975dbcaf5" ON dwh.int_reviews USING btree (listing_id)                     |
+|e12fedb79248396f914fe600b83a7eca|int_reviews          |CREATE INDEX e12fedb79248396f914fe600b83a7eca ON dwh.int_reviews USING btree (date)                             |
+|5f935161f72a4e86302efa35e383ccf6|int_reviews          |CREATE INDEX "5f935161f72a4e86302efa35e383ccf6" ON dwh.int_reviews USING btree (reviewer_id)                    |
+|82b66efabe531496dff3655d77e0813d|int_neightbourhoods  |CREATE UNIQUE INDEX "82b66efabe531496dff3655d77e0813d" ON dwh.int_neightbourhoods USING btree (neighbourhood_id)|
+|84239050b3881a5b6f9a30c0e7fc7c2e|dim_host             |CREATE UNIQUE INDEX "84239050b3881a5b6f9a30c0e7fc7c2e" ON dwh.dim_host USING btree (host_id)                    |
+|6db72efda871c89e12f37d7f63c644ad|dim_neighbourhood    |CREATE UNIQUE INDEX "6db72efda871c89e12f37d7f63c644ad" ON dwh.dim_neighbourhood USING btree (neighbourhood_id)  |
+|70487ef70e9d6c13b7e82dd08692915e|dim_reviewer         |CREATE INDEX "70487ef70e9d6c13b7e82dd08692915e" ON dwh.dim_reviewer USING btree (reviewer_id)                   |
+|7d8a5bf931e4534492b2fca909a4c8f2|dim_listing          |CREATE UNIQUE INDEX "7d8a5bf931e4534492b2fca909a4c8f2" ON dwh.dim_listing USING btree (listing_id)              |
+|67d8298dc467eeb22def2bcd17f54eb5|dim_listing          |CREATE INDEX "67d8298dc467eeb22def2bcd17f54eb5" ON dwh.dim_listing USING btree (neighbourhood_id)               |
 
 
 # Lineage Diagram
 The lineage diagram provides a visual representation of the flow of data through various stages of the data pipeline, illustrating how raw data transforms into actionable insights within the data warehouse. It captures the relationships between different components, including data sources, transformations, and the final analytical outputs.
-![dbt DAG](./readme_assets/lineage.png)
+![dbt DAG](./readme_assets/dbt-dag.png)

@@ -1,0 +1,21 @@
+{
+    "./raw/calendar.csv": {
+        "table_name": "calendar",
+        "primary_unique_key": "calendar_id"
+    }
+    ,
+    "./raw/listings.csv": {
+        "table_name": "listings",
+        "primary_unique_key": "listing_id"
+    }
+    ,
+    "./raw/reviews.csv": {
+        "table_name": "reviews",
+        "primary_unique_key": "id"
+    }
+    ,
+    "./raw/neighbourhoods.geojson": {
+        "table_name": "neighbourhoods",
+        "primary_unique_key": "neighbourhood_id"
+    }
+}

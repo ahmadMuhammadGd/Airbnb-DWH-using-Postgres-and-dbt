@@ -29,11 +29,51 @@ clean-targets:         # directories to be removed by `dbt clean`
 # In this example config, we tell dbt to build all models in the example/
 # directory as views. These settings can be overridden in the individual model
 # files using the `{{ config(...) }}` macro.
+
+
 models:
   dbt_model:
-    intermediate:
-      +materialized: incremental
     staging:
       +materialized: incremental
-    mart:
+      +tags: 
+        - "staging"
+        - "bronze"
+      +docs:
+        node_color: "#124076"
+      +group: staging
+
+    intermediate:
       +materialized: incremental
+      +tags: 
+        - "intermediate"
+        - "silver"
+      +docs:
+        node_color: black
+      +group: intermediate
+      
+    marts: 
+      dims:
+        +materialized: incremental
+        +tags: 
+          - "dimensions"
+          - "gold"
+        +docs:
+          node_color: "#798645"
+        +group: dimensions
+      
+      facts:
+        +materialized: incremental
+        +tags: 
+          - "facts"
+          - "gold"
+        +docs:
+          node_color: "#7F9F80"
+        +group: facts
+      
+    lookup:
+      +materialized: incremental
+      +tags: 
+        - "lookup"
+      +docs:
+        node_color: "blue"
+      +group: lookup

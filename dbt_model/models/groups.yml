@@ -1,0 +1,20 @@
+groups:
+  - name: staging
+    owner:
+      name: dbt_user
+
+  - name: intermediate
+    owner:
+      name: dbt_user
+
+  - name: dimensions
+    owner:
+      name: dbt_user
+
+  - name: facts
+    owner:
+      name: dbt_user
+
+  - name: lookup
+    owner:
+      name: dbt_user

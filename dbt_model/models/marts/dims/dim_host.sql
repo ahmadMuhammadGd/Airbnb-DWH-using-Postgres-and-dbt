@@ -2,8 +2,8 @@
     indexes=[
       {'columns': ['host_id'], 'unique': True},
     ],
-    unique_key='id',
-    incremental_strategy='merge',
+    unique_key='host_id',
+    incremental_strategy='append',
 )}}
 
 WITH CTE_host AS (
@@ -31,6 +31,15 @@ WITH CTE_host AS (
         {{ ref('stg_listing') }}
 )
 SELECT
-    *
+    s.*
 FROM    
-    CTE_host
+    CTE_host s
+
+{% if is_incremental() %}
+LEFT JOIN
+    {{ this }} d
+ON
+    s.host_id = d.host_id
+WHERE
+    d.host_id IS NULL
+{% endif %}

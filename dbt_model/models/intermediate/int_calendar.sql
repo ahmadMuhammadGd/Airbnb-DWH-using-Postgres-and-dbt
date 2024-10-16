@@ -1,27 +1,41 @@
 {{ config(
     indexes=[
       {'columns': ['date'], 'unique': False},
-      {'columns': ['listing_id'], 'unique': False}
+      {'columns': ['listing_id'], 'unique': False},
+      {'columns': ['calendar_id'], 'unique': True},
     ],
-    unique_key='listing_id',
+    unique_key='calendar_id',
     incremental_strategy='append',
 )}}
 
 
 WITH CTE_calendar AS (
     SELECT
-        listing_id, 
-        date,
-        available,
-        price,
-        adjusted_price,
-        minimum_nights,
-        maximum_nights
+        s.calendar_id,
+        s.listing_id, 
+        s.date,
+        s.available,
+        s.price,
+        s.adjusted_price,
+        s.minimum_nights,
+        s.maximum_nights
     FROM 
-        {{ ref('stg_calendar') }}        
+        {{ ref('stg_calendar') }} s 
+
+
+    {% if is_incremental() %}
+    LEFT JOIN 
+        {{ this }} d
+    ON 
+        s.calendar_id=d.calendar_id
+    WHERE
+        d.calendar_id IS NULL 
+    {% endif %}
+
+
 )
 ,
-CTE_clean_calendar AS ( 
+CTE_clean_batch AS ( 
     SELECT
         DISTINCT 
         *
@@ -32,6 +46,8 @@ CTE_clean_calendar AS (
         AND
         maximum_nights <= 365
         AND
+        minimum_nights <= 365
+        AND
         available IS NOT NULL
         AND
         price IS NOT NULL
@@ -41,4 +57,4 @@ CTE_clean_calendar AS (
 SELECT 
     *
 FROM
-    CTE_clean_calendar
+    CTE_clean_batch 

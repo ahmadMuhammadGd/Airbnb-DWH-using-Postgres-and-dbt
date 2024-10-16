@@ -1,12 +1,15 @@
 {{ config(
     indexes=[
-      {'columns': ['pk'], 'unique': True},
+      {'columns': ['transaction_id'], 'unique': True},
       {'columns': ['date'], 'unique': False},
       {'columns': ['host_id'], 'unique': False},
       {'columns': ['listing_id'], 'unique': False}
     ],
-    unique_key='pk',
+    unique_key='transaction_id',
     incremental_strategy='append',
+    pre_hook=[
+        "CREATE SEQUENCE IF NOT EXISTS transaction_id_seq AS BIGINT START WITH 1;"
+    ]
 )}}
 
 
@@ -20,20 +23,32 @@ WITH CTE_stg_listing AS (
 ,
 CTE_int_calendar AS (
     SELECT
-        listing_id, 
-        date,
-        available,
-        price,
-        adjusted_price,
-        minimum_nights,
-        maximum_nights
+        s.listing_id, 
+        s.date,
+        s.available,
+        s.price,
+        s.adjusted_price,
+        s.minimum_nights,
+        s.maximum_nights
     FROM
-        {{ ref('int_calendar') }}
+        {{ ref('int_calendar') }} s
+    {% if is_incremental() %}
+    LEFT JOIN 
+        {{ this }} d    
+    ON
+        s.listing_id = d.listing_id
+        AND
+        s.date = d.date
+    WHERE
+        d.listing_id IS NULL
+        AND
+        d.date IS NULL
+    {% endif %}
 )
 ,
 CTE_fact_listing AS (
     SELECT
-        ROW_NUMBER() OVER (ORDER BY c.date, c.listing_id) AS pk
+        NEXTVAL('transaction_id_seq') AS transaction_id
         , c.listing_id 
         , l.host_id 
         , c.date 

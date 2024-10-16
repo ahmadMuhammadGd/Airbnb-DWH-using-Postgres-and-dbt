@@ -3,22 +3,34 @@
     indexes=[
       {'columns': ['id'], 'unique': True},
       {'columns': ['listing_id'], 'unique': False},
+      {'columns': ['date'], 'unique': False},
       {'columns': ['reviewer_id'], 'unique': False}
     ],
     unique_key='id',
-    incremental_strategy='merge',
+    incremental_strategy='append',
 )}}
 
 WITH CTE_reviews AS(
     SELECT
-        listing_id,
-        id,
-        date,
-        reviewer_id,
-        reviewer_name,
-        comments
+        DISTINCT 
+        s.listing_id,
+        s.id,
+        s.date,
+        s.reviewer_id,
+        s.reviewer_name,
+        s.comments
     FROM 
-        {{ ref('stg_reviews') }}
+        {{ ref('stg_reviews') }} s
+
+
+    {% if is_incremental() %}
+    LEFT JOIN
+        {{ this }} d
+    ON
+        s.reviewer_id = d.reviewer_id
+    WHERE
+        d.reviewer_id IS NULL
+    {% endif %}
 )
 ,
 CTE_listing_host AS (
@@ -35,20 +47,28 @@ CTE_listing_host AS (
 ,
 CTE_pre_cleaned_reviews AS (
     SELECT
-        DISTINCT 
-             id
+             r.id
             , r.listing_id
             , lh.host_id
-            , date
-            , reviewer_id
-            , comments
-            , INITCAP(LOWER(reviewer_name)) AS reviewer_name
+            , r.date
+            , r.reviewer_id
+            , r.comments
+            , INITCAP(LOWER(r.reviewer_name)) AS reviewer_name
     FROM
         CTE_reviews r
     LEFT JOIN
         CTE_listing_host lh         
     ON
         lh.listing_id = r.listing_id
+
+    {% if is_incremental() %}
+    LEFT JOIN
+        {{ this }} d  
+    ON
+        d.id = r.id    
+    WHERE
+        d.id IS NULL
+    {% endif %}
 )
 ,
 CTE_cleaned_reviews AS (

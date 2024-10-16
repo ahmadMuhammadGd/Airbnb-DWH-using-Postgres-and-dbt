@@ -1,7 +1,9 @@
 {{ config(
     indexes=[
-      {'columns': ['listing_id'], 'unique': True}
-    ]
+      {'columns': ['listing_id'], 'unique': True},
+      {'columns': ['host_id'], 'unique': False},
+    ],
+    unique_key="listing_id"
 )}}
 WITH CTE_listing AS (
     SELECT 
@@ -83,4 +85,17 @@ WITH CTE_listing AS (
     FROM 
         {{ source('airbnb', 'listings') }}
 )
-SELECT * FROM CTE_listing
+SELECT 
+    s.* 
+FROM
+    CTE_listing s
+{% if is_incremental() %}
+
+LEFT JOIN 
+    {{ this }} d
+ON 
+    s.listing_id=d.listing_id
+WHERE
+    d.listing_id IS NULL 
+
+{% endif %}

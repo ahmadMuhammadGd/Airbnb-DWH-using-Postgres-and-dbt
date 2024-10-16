@@ -3,15 +3,24 @@
       {'columns': ['reviewer_id'], 'unique': False},
     ],
     unique_key='reviewer_id',
-    incremental_strategy='merge',
+    incremental_strategy='append',
 )}}
 
 WITH CTE_reviewer AS(
-    SELECT DISTINCT
-          reviewer_id
-        , reviewer_name
+    SELECT DISTINCT ON( s.reviewer_id )
+          s.reviewer_id
+        , s.reviewer_name
     FROM 
-        {{ ref('int_reviews') }}
+        {{ ref('int_reviews') }} s
+
+    {% if is_incremental() %}
+    LEFT JOIN
+        {{ this }} d
+    ON
+        s.reviewer_id = d.reviewer_id
+    WHERE
+        d.reviewer_id IS NULL
+    {% endif %}
 )
 ,
 CTE_cleaned_reviewers AS (

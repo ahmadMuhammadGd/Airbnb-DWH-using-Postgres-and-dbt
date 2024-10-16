@@ -121,24 +121,27 @@ models:
         type: text
       - name: neighbourhood_id
         description: "Foreign key linking to the neighbourhood dimension."
-        type: bigint
+        type: text
+
 
 
   - name: dim_neighbourhood
-    description: "Processes and cleans neighbourhood data."
+    description: "This model processes neighbourhood data, generating a unique ID for each neighbourhood and organizing geographic information."
     columns:
       - name: neighbourhood_id
-        description: "Unique identifier for the neighbourhood."
+        description: "Unique identifier for the neighbourhood, generated using ROW_NUMBER()."
         type: integer
       - name: neighbourhood_group
-        description: "Group or district the neighbourhood belongs to."
+        description: "Name of the neighbourhood group (e.g., district or region)."
         type: text
       - name: neighbourhood
-        description: "Name of the neighbourhood."
+        description: "Name of the specific neighbourhood."
         type: text
       - name: geometry
-        description: "Geospatial representation of the neighbourhood."
+        description: "Geographic boundary or coordinates of the neighbourhood."
         type: geometry
+      - name: row_id
+        type: text
 
 
   - name: dim_reviewer
@@ -157,15 +160,4 @@ models:
         description: "Last name of the reviewer."
         type: text
 
-sources:
-  - name: stg_listing
-    description: "Source data for listings, containing raw listing information."
 
-  - name: dim_neighbourhood
-    description: "Dimension table containing neighbourhood data."
-
-  - name: int_reviews
-    description: "Source data for reviews, containing raw review details."
-
-  - name: int_neightbourhoods
-    description: "Intermediate data for neighbourhoods."

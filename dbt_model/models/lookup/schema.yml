@@ -1,0 +1,24 @@
+  # Neighbourhoods table
+version: 2
+
+models:
+  - name: lookup_neighbourhoods
+    description: "Geospatial information about the neighbourhoods in the Airbnb dataset."
+    columns:
+      - name: row_id
+        description: "Surrogate key for neighbourhood and neighbourhood_group"
+
+      - name: neighbourhood_group
+        description: "A broader group or zone that encompasses several neighbourhoods."
+        data_tests:
+          - not_null
+
+      - name: neighbourhood
+        description: "The specific name of the neighbourhood."
+        data_tests:
+          - not_null
+      
+      - name: geometry
+        description: "Geospatial geometry data (e.g., polygons) that define the neighbourhood boundaries."
+        data_tests:
+          - not_null

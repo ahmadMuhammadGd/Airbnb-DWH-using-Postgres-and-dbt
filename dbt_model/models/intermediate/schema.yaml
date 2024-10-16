@@ -26,23 +26,6 @@ models:
         description: "Maximum number of nights allowed for booking."
         type: integer
 
-
-  - name: int_neightbourhoods
-    description: "This model processes neighbourhood data, generating a unique ID for each neighbourhood and organizing geographic information."
-    columns:
-      - name: neighbourhood_id
-        description: "Unique identifier for the neighbourhood, generated using ROW_NUMBER()."
-        type: integer
-      - name: neighbourhood_group
-        description: "Name of the neighbourhood group (e.g., district or region)."
-        type: text
-      - name: neighbourhood
-        description: "Name of the specific neighbourhood."
-        type: text
-      - name: geometry
-        description: "Geographic boundary or coordinates of the neighbourhood."
-        type: geometry
-
   - name: int_reviews
     description: "This model cleans and processes review data, ensuring valid entries and standardizing reviewer names."
     columns:
@@ -66,11 +49,3 @@ models:
         type: text
       - name: host_id
         type: bigint
-
-sources:
-  - name: stg_calendar
-    description: "Source data for the calendar information."
-  - name: stg_neighbourhoods
-    description: "Source data for neighbourhood details."
-  - name: stg_reviews
-    description: "Source data for reviews, containing raw review details."

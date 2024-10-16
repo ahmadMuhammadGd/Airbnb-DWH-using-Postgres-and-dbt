@@ -1,11 +1,11 @@
 version: 2
 
 models:
-  - name: fact_listing
+  - name: fact_listing_calendar
     description: "Fact table for listing data combining calendar and host information."
     columns:
-      - name: pk
-        description: "Primary key for the fact_listing table."
+      - name: transaction_id
+        description: "Primary key for the fact_listing_calendar table."
         type: bigint
       - name: listing_id
         description: "Unique identifier for the listing."
@@ -35,7 +35,7 @@ models:
   - name: fact_reviews
     description: "Fact table for reviews associated with listings."
     columns:
-      - name: id
+      - name: review_id
         description: "Unique identifier for the review."
         type: integer
       - name: listing_id
